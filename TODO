@@ -1,11 +1,11 @@
 
 A) When modules are ready to run
+12.) ImageGenerator: generate Gaussian in image generator: Generate lists of x and y coordinates from basic image information; use numpy.linspace (np.linspace(-3, 3, 120))
+9.) write plotting routines
 14.) add api to applypsf
 15.) clarify params in that file
-12.) ImageGenerator: generate Gaussian in image generator: Generate lists of x and y coordinates from basic image information; use numpy.linspace (np.linspace(-3, 3, 120))
 10.) calculate resolution factor
 11.) create code tests
-
 
 
 
