@@ -1,0 +1,76 @@
+
+A) When modules are ready to run
+13.) upload code to repository
+7.) Make plotters
+10.) calculate resolution factor
+12.) ImageGenerator: generate Gaussian in image generator: Generate lists of x and y coordinates from basic image information; use numpy.linspace (np.linspace(-3, 3, 120))
+
+
+
+
+# Module code notes:
+# =======================
+1.) Select Targets: 
+    select on magnitudes and photometric redshift in a simple way
+    choose thing that is closest to a choice after a hierarchy of choices
+    XXX Select based on cluster target list; how to do this with our current tile survey code
+2.) Generate Image :
+    create a fake image from gaussian distribution
+    calculate plate_scale, assuming that pixels are in the DECam focal plane
+    first version: empty image with point at center
+3.) Generate spectrum :
+    use the code we have
+    XXX need to understand how spectrum generator works.
+4.) Generate Photons:
+    for each photon sampled from the plane, sample from the energy spectrum
+    sample from the non-zero image pixels
+    sample from spectrum: http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.rv_discrete.html#scipy.stats.rv_discrete
+    sample in time: sample between 0 and exposure time
+5.) Apply PSF
+    Jiangang code
+6.) Apply Detector Measurement
+    for each property of each photon, add random noise to it
+            R = deltaV/V or deltaLambda/Lambda ... apply to lambda
+    what is the error in time ... time resolution?
+
+
+# Module i/o notes:
+# =======================
+1.) Select Targets:
+    Input:  magnitudes, photo-z, ra/dec
+    output: selection flag
+2.) Generate Image: [dummy now]
+    Input:  sizes of galaxies
+    output: monochromatic images
+3.) Generate Spectrum:
+    Input:  galaxy photometry, target selection flag
+    Output: spectrum for objects that have been selected, wavelength grid for objects that have been selected 
+            (save ids for selected only objects for QA)
+4.) Generate Photons:
+    Input:  galaxy spectrum, target selection flag, exposure_time
+    Output: Set of N photons, for each object
+5.) Apply PSF:
+    Input:  photon energy, photon time
+    output: photon positions
+6.) Apply Detector
+    Input:  all photon information
+    output: modified photon information (duplicate all information)
+
+
+
+# Photon properties:
+# =======================
+    photon ID
+    object ID
+    energy
+    x position
+    y position
+    arrival time
+
+
+# API:
+# =======================
+    create from ARCONS work
+    package the same way that archive.py is packaged?
+
+
