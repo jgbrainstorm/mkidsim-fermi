@@ -6,11 +6,21 @@ import archive
 import Plotters
 import numpy
 
+# ================================================
+# Generate Pixel Coordinates
+# ================================================
+def GeneratePixelCoordinates(npix):
+    x = numpy.arange(0, npix, 1, float)
+    y = x[:,numpy.newaxis]
+    return x, y
+
 
 # ================================================
 # Generate Multivariate Normal
 # ================================================
 def GenerateMultivariateNormal(pos_x, pos_y, center_x, center_y, sigma_x, sigma_y, correlation):
+
+    # generate 2d Gaussian
     A = 1./ (2.* numpy.pi* sigma_x* sigma_y* numpy.sqrt(1-corr**2) )
     B0 = -1./ (2.* (1-corr**2))
     B1 = (pos_x - center_x)**2/ sigma_x**2
@@ -32,12 +42,23 @@ def MeasureCenter(npix):
 # ================================================
 # Generate Profile
 # ================================================
-def GenerateProfile(image, npix, profiletype):
+def GenerateProfile(image, npix, profiletype, sigma_x=1., sigma_y=1., correlation=0.):
+
     center_x, center_y = MeasureCenter(npix)
+
     if profiletype == 'center':
         image[center_x,center_y] = 1.
+
     if profiletype == 'gaussian':
+
+        # Generate Pixel Coord
+        pos_x, pos_y = GeneratePixelCoordinates(npix)
+
+        # Generate Multi-Var Normal
+        profile = GenerateMultivariateNormal(pos_x, pos_y, center_x, center_y, sigma_x, sigma_y, correlation)
+
         print "does not exist yet"
+        image += profile
 
 
 
@@ -67,8 +88,9 @@ def GenerateImage():
     # Create 2-D Array of points
     image = numpy.zeros( (npix,npix), dtype=float)
 
+
     # create profile and add to image
-    image = GenerateProfile( image, npix, profile_type )
+    image = GenerateProfile( image, npix, profile_type , sigma_x=1., sigma_y=1., correlation=0.)
 
 
     # -----------------------------------------------------
