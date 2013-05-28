@@ -10,11 +10,28 @@ from scipy.special import gamma
 from numpy.random import normal
 import scipy.fftpack as fft
 
+# API Example
+#   THIS goes into the principal function that you're using to generate new positions;
+#   THIS goes at the BEGINNING of that function
+databank_file = '../../../data/data_bank.h5'
+with archive.archive(databank_file, 'r') as ar:
+    PhotonEnergies      = ar['/Photon/Energy']
+    PhotonArrivalTimes  = ar['/Photon/ArrivalTime']
+    PhotonPositionsX    = ar['/Photon/PositionsX']
+    PhotonPositionsY    = ar['/Photon/PositionsY']
 
+#   THIS goes at the END of that function
+#   feel free to move it, or let me know where it should go and I can move it.
+with archive.archive(databank_file, 'r') as ar:
+    ar['/Photon/PositionsX_Shifted']   = PhotonPositionsX
+    ar['/Photon/PositionsY_Shifted']   = PhotonPositionsY
 
+# ================================================
+# Count Photons and gain
+# ================================================
 def magphoton(mag,exptime=1.,gain=0.23):
     """
-    This codes generate the number of photons and ADUs based on DES optics and detectors. 
+    This codes generate the number of photons and ADUs based on DES optics and detectors.
     """
     zeropoint = 26.794176
     nphoton = exptime*10**(0.4*(zeropoint - mag))
@@ -24,7 +41,7 @@ def magphoton(mag,exptime=1.,gain=0.23):
 
 
 def des_psf_image(exptime=100,mag=None,seeing=[0.7,0.,0.],setbkg=True,moffat=False):
-    
+
     """
     This code generate a PSF star with seeing and sky background (no optics psf)
     exptime is given in sec
@@ -59,6 +76,9 @@ def factorial(n):
 
 
 
+# ================================================
+# Generate Zernikes
+# ================================================
 def zernike(j,npix=256,phase=0.0):
     '''
     generate zernike polynomial of jth order
@@ -100,6 +120,9 @@ def zernike(j,npix=256,phase=0.0):
     return zarr
 
 
+# ================================================
+# Aperture
+# ================================================
 def aperture(npix=256, cent_obs=0.0, spider=0):
     '''
     this function make a spide like mask
@@ -122,10 +145,13 @@ def aperture(npix=256, cent_obs=0.0, spider=0):
     return illum
 
 
+# ================================================
+# Generate Phase Wavefront
+# ================================================
 def wavefront(d_over_r0, npix=256, nterms=15, level=None):
     '''
     this function generate the phase (wavefront) by assuming Kolmogorov turbulence model.
-    a description of this model can be fround from: 
+    a description of this model can be fround from:
     http://www.ctio.noao.edu/~atokovin/tutorial/part1/turb.html
     '''
     scale = pow(d_over_r0,5.0/3.0)
@@ -153,10 +179,12 @@ def wavefront(d_over_r0, npix=256, nterms=15, level=None):
         wf += coeff[j-1]*normal()*zernike(j,npix=npix)
     return wf
 
-
+# ================================================
+# Full Atmo PSF
+# ================================================
 def atmPSF(aperture, wavefront, overfill=1):
     '''
-    this codes generate the PSF due to atmospheric turbulence. 
+    this codes generate the PSF due to atmospheric turbulence.
     '''
     npix = len(wavefront)
     nbig = npix*overfill
@@ -174,6 +202,9 @@ def atmPSF(aperture, wavefront, overfill=1):
     return crop
 
 
+# ================================================
+# Generate total PSF
+# ================================================
 def genPSF(d_over_r0=20.,nterms=20,overfill=1.5):
     aper = aperture(npix=256, cent_obs=0.2, spider=2)
     wf = wavefront(d_over_r0, npix=256, nterms=nterms, level=None)
@@ -182,13 +213,13 @@ def genPSF(d_over_r0=20.,nterms=20,overfill=1.5):
     return img/img.sum()
 
 
-    
+
+# ================================================
+# Generate Images
+# ================================================
 for i in range(100):
     im = genPSF()
     pl.imshow(im)
     pl.savefig(str(i)+'.png')
     pl.close()
     print i
-
-
-
