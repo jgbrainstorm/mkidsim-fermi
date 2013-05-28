@@ -63,15 +63,20 @@ A) When modules are ready to run
 # =======================
     photon ID
     object ID
-    energy
     x position
     y position
     arrival time
+    energy
 
 
 # API:
 # =======================
     create from ARCONS work
     package the same way that archive.py is packaged?
+
+
+# Questions
+# =======================
+# how will we correlate photons with objects, when there are multiple objects per image
 
 
